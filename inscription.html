@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Électeur - UniVote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            color: #0052cc;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0052cc;
+            box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: #0052cc;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #003d99;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-cancel {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #dee2e6;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #0052cc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .requirement {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .requirement.valid {
+            color: #28a745;
+        }
+
+        .requirement.invalid {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/images/univote-logo.png" alt="UniVote Logo">
+            <h1>Inscription</h1>
+            <p>Créez votre compte électeur</p>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <form id="inscriptionForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+                <div class="form-group">
+                    <label for="prenom">Prénom *</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="postnom">Postnom</label>
+                <input type="text" id="postnom" name="postnom">
+            </div>
+
+            <div class="form-group">
+                <label for="matricule">Matricule *</label>
+                <input type="text" id="matricule" name="matricule" required placeholder="Ex: MAT123456">
+                <div class="requirement" id="matriculeReq">Le matricule doit contenir au moins 6 caractères</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe *</label>
+                <input type="password" id="password" name="password" required>
+                <div class="requirement" id="passwordReq">Le mot de passe doit contenir au moins 6 caractères</div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmer le mot de passe *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div class="requirement" id="confirmReq">Les mots de passe doivent correspondre</div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-submit">S'inscrire</button>
+                <button type="button" class="btn-cancel" onclick="goBack()">Annuler</button>
+            </div>
+        </form>
+
+        <div class="login-link">
+            Vous avez déjà un compte? <a href="connexion-electeur.html">Se connecter</a>
+        </div>
+    </div>
+
+    <script>
+        // Hachage simple du mot de passe
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        // Validation en temps réel
+        document.getElementById('matricule').addEventListener('input', function() {
+            const req = document.getElementById('matriculeReq');
+            if (this.value.length >= 6) {
+                req.classList.add('valid');
+                req.classList.remove('invalid');
+            } else {
+                req.classList.add('invalid');
+                req.classList.remove('valid');
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            const req = document.getElementById('passwordReq');
+            if (this.value.length >= 6) {
+                req.classList.add('valid');
+                req.classList.remove('invalid');
+            } else {
+                req.classList.add('invalid');
+                req.classList.remove('valid');
+            }
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const req = document.getElementById('confirmReq');
+            const password = document.getElementById('password').value;
+            if (this.value === password && this.value.length > 0) {
+                req.classList.add('valid');
+                req.classList.remove('invalid');
+            } else {
+                req.classList.add('invalid');
+                req.classList.remove('valid');
+            }
+        });
+
+        // Soumission du formulaire
+        document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nom = document.getElementById('nom').value.trim();
+            const prenom = document.getElementById('prenom').value.trim();
+            const postnom = document.getElementById('postnom').value.trim();
+            const matricule = document.getElementById('matricule').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (!nom || !prenom || !matricule || !password) {
+                showMessage('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+
+            if (matricule.length < 6) {
+                showMessage('Le matricule doit contenir au moins 6 caractères', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Le mot de passe doit contenir au moins 6 caractères', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            // Vérifier si le matricule existe déjà
+            const electeurs = JSON.parse(localStorage.getItem('electeurs') || '[]');
+            if (electeurs.some(e => e.matricule === matricule)) {
+                showMessage('Ce matricule est déjà enregistré', 'error');
+                return;
+            }
+
+            // Créer le nouvel électeur
+            const nouvelElecteur = {
+                id: Date.now(),
+                nom,
+                prenom,
+                postnom,
+                matricule,
+                password: simpleHash(password),
+                dateInscription: new Date().toISOString(),
+                hasVoted: false
+            };
+
+            electeurs.push(nouvelElecteur);
+            localStorage.setItem('electeurs', JSON.stringify(electeurs));
+
+            showMessage('Inscription réussie! Vous pouvez maintenant vous connecter.', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'connexion-electeur.html';
+            }, 2000);
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message show ${type}`;
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

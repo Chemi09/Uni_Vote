@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote - UniVote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content h1 {
+            color: #0052cc;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header-content p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .header-actions button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .header-actions button:hover {
+            background: #c82333;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .vote-status {
+            background: #e8f4f8;
+            border-left: 4px solid #0052cc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .vote-status p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .vote-status strong {
+            color: #0052cc;
+        }
+
+        .poste-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .poste-card h2 {
+            color: #0052cc;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0052cc;
+            padding-bottom: 10px;
+        }
+
+        .candidat-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .candidat-option:hover {
+            border-color: #0052cc;
+            background: #f0f5ff;
+        }
+
+        .candidat-option input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .candidat-info {
+            flex: 1;
+        }
+
+        .candidat-info h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .candidat-info p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+
+        .btn-cancel {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #dee2e6;
+        }
+
+        .no-candidates {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>🗳️ Bulletin de Vote</h1>
+                <p id="userInfo"></p>
+            </div>
+            <div class="header-actions">
+                <button onclick="logout()">Déconnexion</button>
+            </div>
+        </header>
+
+        <div class="message" id="message"></div>
+        <div class="vote-status" id="voteStatus"></div>
+
+        <form id="voteForm">
+            <div id="postesContainer"></div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-submit">Valider le Vote</button>
+                <button type="reset" class="btn-reset">Réinitialiser</button>
+                <button type="button" class="btn-cancel" onclick="goBack()">Annuler</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Vérification de la session
+        function checkSession() {
+            const currentElecteur = localStorage.getItem('currentElecteur');
+            if (!currentElecteur) {
+                window.location.href = 'connexion-electeur.html';
+                return null;
+            }
+            return JSON.parse(currentElecteur);
+        }
+
+        // Vérification du statut du vote
+        function checkVoteStatus() {
+            const voteStatus = JSON.parse(localStorage.getItem('voteStatus') || '{"voteOpen": false}');
+            return voteStatus.voteOpen;
+        }
+
+        // Affichage des informations de l'utilisateur
+        function displayUserInfo() {
+            const electeur = checkSession();
+            if (electeur) {
+                document.getElementById('userInfo').textContent = `Bienvenue, ${electeur.prenom} ${electeur.nom}`;
+            }
+        }
+
+        // Affichage du statut du vote
+        function displayVoteStatus() {
+            const voteOpen = checkVoteStatus();
+            const statusDiv = document.getElementById('voteStatus');
+            
+            if (!voteOpen) {
+                statusDiv.innerHTML = '<p><strong>⚠️ Attention :</strong> Le vote est actuellement fermé. Vous ne pouvez pas voter pour le moment.</p>';
+                document.getElementById('voteForm').style.display = 'none';
+                return false;
+            }
+
+            statusDiv.innerHTML = '<p><strong>✓ Le vote est ouvert.</strong> Vous pouvez maintenant voter pour chaque poste.</p>';
+            return true;
+        }
+
+        // Chargement des postes et candidats
+        function loadPostes() {
+            const candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
+            const postes = [...new Set(candidats.map(c => c.poste))];
+
+            if (postes.length === 0) {
+                document.getElementById('postesContainer').innerHTML = '<div class="no-candidates">Aucun candidat n\'est disponible pour le moment.</div>';
+                return;
+            }
+
+            let html = '';
+            postes.forEach(poste => {
+                const candidatsPoste = candidats.filter(c => c.poste === poste);
+                html += `
+                    <div class="poste-card">
+                        <h2>${poste}</h2>
+                        ${candidatsPoste.map(candidat => `
+                            <label class="candidat-option">
+                                <input type="radio" name="poste_${poste}" value="${candidat.id}" required>
+                                <div class="candidat-info">
+                                    <h3>${candidat.nom} ${candidat.prenom}</h3>
+                                    <p>Matricule: ${candidat.matricule}</p>
+                                </div>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            });
+
+            document.getElementById('postesContainer').innerHTML = html;
+        }
+
+        // Soumission du formulaire de vote
+        document.getElementById('voteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const electeur = checkSession();
+            if (!electeur) return;
+
+            if (!checkVoteStatus()) {
+                showMessage('Le vote est fermé. Vous ne pouvez pas voter.', 'error');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const votes = [];
+            let allSelected = true;
+
+            const candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
+            const postes = [...new Set(candidats.map(c => c.poste))];
+
+            postes.forEach(poste => {
+                const selectedValue = formData.get(`poste_${poste}`);
+                if (!selectedValue) {
+                    allSelected = false;
+                    return;
+                }
+                votes.push({
+                    poste,
+                    candidatId: selectedValue
+                });
+            });
+
+            if (!allSelected) {
+                showMessage('Veuillez voter pour tous les postes', 'error');
+                return;
+            }
+
+            // Enregistrer le vote
+            const allVotes = JSON.parse(localStorage.getItem('votes') || '[]');
+            const voteRecord = {
+                id: Date.now(),
+                electeurId: electeur.id,
+                electeurMatricule: electeur.matricule,
+                votes,
+                timestamp: new Date().toISOString()
+            };
+
+            allVotes.push(voteRecord);
+            localStorage.setItem('votes', JSON.stringify(allVotes));
+
+            // Mettre à jour le flag hasVoted
+            const electeurs = JSON.parse(localStorage.getItem('electeurs') || '[]');
+            const electeurIndex = electeurs.findIndex(e => e.id === electeur.id);
+            if (electeurIndex !== -1) {
+                electeurs[electeurIndex].hasVoted = true;
+                localStorage.setItem('electeurs', JSON.stringify(electeurs));
+            }
+
+            // Mettre à jour la session
+            electeur.hasVoted = true;
+            localStorage.setItem('currentElecteur', JSON.stringify(electeur));
+
+            showMessage('✓ Votre vote a été enregistré avec succès!', 'success');
+
+            setTimeout(() => {
+                window.location.href = 'resultat.html';
+            }, 2000);
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message show ${type}`;
+        }
+
+        function logout() {
+            localStorage.removeItem('currentElecteur');
+            window.location.href = 'index.html';
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Initialisation
+        window.addEventListener('load', function() {
+            displayUserInfo();
+            if (displayVoteStatus()) {
+                loadPostes();
+            }
+        });
+    </script>
+</body>
+</html>
